@@ -1,14 +1,14 @@
-with "config/groceries_config.gpr";
-project Groceries is
+with "config/demos_config.gpr";
+project Demos is
 
    for Source_Dirs use ("src/", "config/");
-   for Object_Dir use "obj/" & Groceries_Config.Build_Profile;
+   for Object_Dir use "obj/" & Demos_Config.Build_Profile;
    for Create_Missing_Dirs use "True";
    for Exec_Dir use "bin";
-   for Main use ("groceries.adb");
+   for Main use ("text_box_demo.adb");
 
    package Compiler is
-      for Default_Switches ("Ada") use Groceries_Config.Ada_Compiler_Switches;
+      for Default_Switches ("Ada") use Demos_Config.Ada_Compiler_Switches;
    end Compiler;
 
    package Binder is
@@ -19,4 +19,4 @@ project Groceries is
       for Artifacts (".") use ("share");
    end Install;
 
-end Groceries;
+end Demos;

@@ -1,7 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Text_Box; use Text_Box;
 
-procedure Groceries is
+procedure Text_Box_Demo is
    Welcome_Box : Text_Box_Type;
    Info_Box : Text_Box_Type;
 begin
@@ -16,4 +16,4 @@ begin
    Create(Info_Box, Width => 40, Height => 4, Title => "Information");
    Set_Content(Info_Box, "Textbox Demo");
    Display(Info_Box);
-end Groceries;
+end Text_Box_Demo;

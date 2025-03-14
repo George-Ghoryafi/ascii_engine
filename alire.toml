@@ -1,12 +1,10 @@
-name = "groceries"
-description = "For grocery list of honours project requirements"
+name = "ascii_engine"
+description = ""
 version = "0.1.0-dev"
 
 authors = ["Eli Wynn"]
-maintainers = ["Eli Wynn <example@example.com>"]
+maintainers = ["Your Name <example@example.com>"]
 maintainers-logins = ["github-username"]
 licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
 website = ""
 tags = []
-
-executables = ["groceries"]
