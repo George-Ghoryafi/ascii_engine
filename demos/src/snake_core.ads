@@ -1,19 +1,15 @@
+with Ascii_Engine; use Ascii_Engine;
+
 package Snake_Core is
-
-   task type Input is
-      entry Stop;
-   end Input;
-
-   function Get_Command return Character;
-   procedure Set_Command (Cmd : Character);
 
    procedure Render_Game;
 
    procedure Move_Cursor_To_End;
 
-   procedure Update_Game (Cmd : Character);
+   procedure Init_Game;
+   procedure Update_Game (Input : Input_T);
 
-   function Quit_Game (Cmd : Character) return Boolean;
+   function Quit_Game (Key : Character) return Boolean;
    function Game_Over return Boolean;
 
 
