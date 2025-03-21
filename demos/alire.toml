@@ -9,7 +9,7 @@ licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
 website = ""
 tags = []
 
-executables = ["snake", "ui"]
+executables = ["container_test"]
 
 [[depends-on]]
 ascii_engine = "*"
