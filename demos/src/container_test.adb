@@ -121,10 +121,74 @@ procedure Container_Test is
       Ada.Text_IO.New_Line;
    end Test_Colored_Containers;
    
-begin
-   Ada.Text_IO.Put_Line ("Container Test Suite");
-   Ada.Text_IO.Put_Line ("===================");
-   Ada.Text_IO.New_Line;
+   -- Test case for nested containers
+      -- Test case for nested containers
+         procedure Test_Nested_Containers is
+            -- Parent container with light gray background
+            Parent_Text : constant String := 
+               "This is a parent container" & ASCII.LF &
+               "It can contain other containers" & ASCII.LF &
+               "as nested elements";
+            Parent_Container : Container.Container_Type := 
+               Container.Create (Parent_Text, Container.Hex_To_Color ("#DDDDDD"));
+            
+            -- Create a border container (like a card component)
+            Border_Text : constant String :=
+               "+----------------------------------------+" & ASCII.LF &
+               "|                                        |" & ASCII.LF &
+               "|                                        |" & ASCII.LF &
+               "|                                        |" & ASCII.LF &
+               "|                                        |" & ASCII.LF &
+               "+----------------------------------------+";
+            Border_Container : Container.Container_Type :=
+               Container.Create (Border_Text, Container.Hex_To_Color ("#333333"));
+            
+            -- First child container with blue background
+            Child1_Text : constant String := "I am a nested blue container";
+            Child1_Container : Container.Container_Type := 
+               Container.Create (Child1_Text, Container.Hex_To_Color ("#0000FF"));
+            
+            -- Second child container with green background
+            Child2_Text : constant String := 
+               "I am a nested green container" & ASCII.LF &
+               "with multiple lines";
+            Child2_Container : Container.Container_Type := 
+               Container.Create (Child2_Text, Container.Hex_To_Color ("#00FF00"));
+            
+            -- Grandchild container (nested inside Child2)
+            Grandchild_Text : constant String := "I am deeply nested!";
+            Grandchild_Container : Container.Container_Type := 
+               Container.Create (Grandchild_Text, Container.Hex_To_Color ("#FF00FF"));
+         begin
+            Ada.Text_IO.Put_Line ("=== Nested Containers Test ===");
+            
+            -- Add the border container to the parent
+            Container.Add_Child (Parent_Container, Border_Container);
+            
+            -- Add the children to the border container (side by side layout)
+            Container.Add_Child (Border_Container, Child1_Container);
+            Container.Add_Child (Border_Container, Child2_Container);
+            
+            -- Add the grandchild to the second child
+            Container.Add_Child (Child2_Container, Grandchild_Container);
+            
+            -- Render the parent container (which will also render its children)
+            Container.Render (Parent_Container);
+            
+            -- Free the containers
+            Container.Free (Parent_Container);
+            Container.Free (Border_Container);
+            Container.Free (Child1_Container);
+            Container.Free (Child2_Container);
+            Container.Free (Grandchild_Container);
+            
+            Ada.Text_IO.New_Line;
+         end Test_Nested_Containers;
+      
+   begin
+      Ada.Text_IO.Put_Line ("Container Test Suite");
+      Ada.Text_IO.Put_Line ("===================");
+      Ada.Text_IO.New_Line;
    
    -- Run all test cases
    Test_Simple_Container;
@@ -132,6 +196,7 @@ begin
    Test_Empty_Container;
    Test_Varying_Line_Lengths;
    Test_Colored_Containers;
+   Test_Nested_Containers;  -- Add this line to run the nested containers test
    
    Ada.Text_IO.Put_Line ("All tests completed.");
 end Container_Test;

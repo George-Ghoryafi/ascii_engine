@@ -19,17 +19,32 @@ package Container is
    type String_Array is array (Positive range <>) of String_Access;
    type String_Array_Access is access String_Array;
    
+   -- Forward declaration for Container_Type
+   type Container_Type;
+   
+   -- Access type for Container_Type
+   type Container_Access is access Container_Type;
+   
+   -- Array of containers and its access type
+   type Container_Array is array (Positive range <>) of Container_Access;
+   type Container_Array_Access is access Container_Array;
+   
    -- Container type definition
    type Container_Type is record
       Width      : Natural;
       Height     : Natural;
       Content    : String_Array_Access;
       Background : Color_Type := Default_Color;
+      Children   : Container_Array_Access := null;
+      Child_Count : Natural := 0;
    end record;
    
    -- Create a new container with the given text and optional background color
    function Create (Text : String; Background_Color : Color_Type := Default_Color) 
                    return Container_Type;
+   
+   -- Add a child container to a parent container
+   procedure Add_Child (Parent : in out Container_Type; Child : Container_Type);
    
    -- Convert hex color code to Color_Type
    function Hex_To_Color (Hex : String) return Color_Type;
