@@ -8,6 +8,7 @@ procedure Container_Test is
    C1 : Container_T := Create("Hello, World!");
    C2 : Container_T := Create("Simple Box");
    C3 : Container_T := Create(""); -- Creating an empty container - this will be allowed to have children 
+   C4 : Container_T := Create("");
    str : Unbounded_String;
    
 begin
@@ -44,6 +45,10 @@ begin
    Add_Child(C3, C2);
    Put_Line(Render(C3));
    New_Line;
+
+   Put_Line("Trying out the nested contaienrs");
+   Container.Add_Child(C4, C3);
+   Put_Line (Render(C4)); 
 
 
 
