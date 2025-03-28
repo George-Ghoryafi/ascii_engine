@@ -10,10 +10,6 @@ with Snake;
 
 package body Snake_Core is
 
-   --  Up        : Input_T := ('w', Up);
-   --  Down      : constant Input_T := ('s', Down);
-   --  Left      : constant Input_T := ('a', Left);
-   --  Right     : constant Input_T := ('d', Right);
    Quit      : Character := 'q';
    Contour   : Character := '.';
    Empty_Pix : Character := ' ';
@@ -33,17 +29,13 @@ package body Snake_Core is
 
    type Render_Buffer is array (Height'Range, Width'Range) of Character;
 
-   
-   type Char_Slice is array (Positive range <>) of Character;
+   --type Char_Slice is array (Positive range <>) of Character;
 
    function Trim (S : String) return String is
             (S (S'First + 1 .. S'Last));
 
    function Move_Cursor (R : Height; C : Width) return String is
         (ESC & "[" & Trim (R'Image) & ";" & Trim (C'Image) & "H");
-
-   function Quit_Game (Key : Character) return Boolean is
-      (Key = Quit);
 
 
    package Rand_Width is new Ada.Numerics.Discrete_Random (Interior_W);
@@ -116,23 +108,25 @@ package body Snake_Core is
    begin
       for I in S'First+1 .. S'Last loop
          if S (S'First) = S (I) then
+            Put_Line ("Game Over 1");
             return True;
          end if;
       end loop;
       if S (S'First).Col = Width'First or S (S'First).Col = Width'Last or 
          S (S'First).Row = Height'First or S (S'First).Row = Height'Last then
+         Put_Line ("Game Over 2");
          return True;
       end if;
       return False;
    end;
 
-   function Update_Pos (P : Position; Input : Input_T) return Position is
+   function Update_Pos (P : Position; Cmd : Command_T) return Position is
    begin
-      if Input.Key = 'w' or else Input.Arrow = Up  then 
+      if Cmd = Up  then 
          return (P.Row - 1, P.Col);
-      elsif Input.Key = 's' or else Input.Arrow = Down then
+      elsif Cmd = Down then
          return (P.Row + 1, P.Col);
-      elsif Input.Key = 'a' or else Input.Arrow = Left then
+      elsif Cmd = Left then
          return (P.Row, P.Col - 1);
       else
          return (P.Row, P.Col + 1);
@@ -140,7 +134,6 @@ package body Snake_Core is
    end;
 
    procedure Init_Game is
-      Pos : Position;
    begin
       Put (Clear_Screen);
       Generate_Contour (RB);
@@ -159,11 +152,11 @@ package body Snake_Core is
       return S;
    end;
 
-   procedure Update_Game (Input : Input_T) is
+   procedure Update_Game (Cmd : Command_T) is
    begin
       Render_Snake (S, Empty_Pix);
       S_Old_Pos := S.all (1);
-      S_First_Pos := Update_Pos (S (S'First), Input);
+      S_First_Pos := Update_Pos (S (S'First), Cmd);
       S := Eat_Food (S, FP);
       S := Update_Snake (S_First_Pos, S);
       Render_Snake (S, Snake_Pix);
