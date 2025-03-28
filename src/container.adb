@@ -4,12 +4,13 @@ with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 package body Container is
 
    -- Constructor implementation
-   function Create (Text : String := ""; Background : Color_T := Red) return Container_T is
+   function Create (Text : String := ""; Background : Color_T := Red; Width : Natural := 5) return Container_T is
    begin
       return Container_T'(
          Text => To_Unbounded_String(Text), 
          Background => Background, 
-         Children => Container_Vectors.Empty_Vector
+         Children => Container_Vectors.Empty_Vector, 
+         Width => Width
       );
    end Create;
    

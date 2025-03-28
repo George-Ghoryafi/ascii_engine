@@ -9,7 +9,7 @@ package Container is
    type Container_T is tagged private;
    
    -- Constructor
-   function Create (Text : String := ""; Background: Color_T := Red) return Container_T;
+   function Create (Text : String := ""; Background: Color_T := Red; Width : Natural := 5) return Container_T;
    
    -- Accessor functions
    function Get_Text (Self : Container_T) return String;
@@ -38,6 +38,7 @@ private
       Text       : Unbounded_String;
       Background : Color_T; 
       Children   : Container_Vectors.Vector; -- Vector containing the container's Children
+      Width      : Natural; 
    end record;
    
 end Container;
