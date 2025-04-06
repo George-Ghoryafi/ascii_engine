@@ -69,7 +69,6 @@ with Widget; use Widget;
 
 
 
-
    procedure Set_Background_Color (Color: Widget.color_t) is
       R_Str : String := Ada.Strings.Fixed.Trim (Color.red'Image, Ada.Strings.Left); 
       G_Str : String := Ada.Strings.Fixed.Trim (Color.green'Image, Ada.Strings.Left);

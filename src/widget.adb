@@ -110,10 +110,8 @@ package body Widget is
       name : String := To_String (This.id); 
       -- We need to convert the id to a string, as it is an unbounded string
       begin
-         -- Now we print the properties of the widget to the screen
-         Put_Line ("Widget ID: " & name);
-         Put_Line ("Width" & Integer'Image (This.width));
-         Put_Line ("Height" & Integer'Image (This.height));
+         handler.Reset_Color;
+        Ada.Text_IO.New_Line;
    end render;
 
 end Widget; 

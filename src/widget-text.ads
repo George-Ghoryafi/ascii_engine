@@ -16,6 +16,14 @@ package Widget.Text is
    type Acc is access all Instance; 
    type Any_Acc is access all Class; 
 
+   -- Access type for strings
+   type String_Access is access String;
+   
+   -- Array of strings and its access type
+   type String_Array is array (Positive range <>) of String_Access;
+   type String_Array_Access is access String_Array;
+   
+
    function Create 
    (
       id : String; 
