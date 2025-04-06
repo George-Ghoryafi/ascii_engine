@@ -63,11 +63,7 @@ with Widget; use Widget;
    begin 
       for c in LOT.Iterate loop 
          w := Layout_Object_Tree.Element (c);
-         current_id := w.Get_Id; 
-         Set_Background_Color (w.bgd_color);
-         Put_Line ("Widget ID: " & To_String (current_id)); -- end declare
-         Reset_Color; 
-         Ada.Text_IO.New_Line;
+         Widget.render(w.all); 
       end loop; -- end for c in LOT.Iterate
    end display_nodes; -- end procedure display_node
 

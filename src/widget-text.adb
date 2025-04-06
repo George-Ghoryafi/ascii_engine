@@ -38,8 +38,11 @@ package body Widget.Text is
 
    procedure render (This : in out Instance) is
       begin 
-         -- Render the text in the widget
+         if This.bgd_color /= Widget.default_color then
+            handler.Set_Background_Color (This.bgd_color);   
+         end if;
          Put_Line (To_String(This.text)); 
+         handler.Reset_Color;
    end render;
 
 

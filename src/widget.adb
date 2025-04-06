@@ -100,6 +100,11 @@ package body Widget is
          return This.height;
       end Set_Event_Override_Height;
 
+   procedure Set_Flex_Direction (This: in out Instance; new_flex: flex_t) is
+      begin 
+         This.flex := new_flex;
+      end Set_Flex_Direction;
+
 
    procedure render (This : in out Instance) is 
       name : String := To_String (This.id); 

@@ -19,6 +19,7 @@ package Widget is
    type align_t        is (left, right, top, bottom, center, stretch, none);
    type buoy_t         is (space_between, space_around, space_evenly, space_nothing); 
    type behaviour_t    is (content, portion, pixel, percent, max); 
+   type flex_t         is (column, row, column_reverse, row_reverse);
 
    type color_t is record 
       red   : Natural range 0 .. 255; 
@@ -52,6 +53,7 @@ package Widget is
       id : SU.Unbounded_String; 
       x, y : Natural := 0; 
       width, height : Natural := 0;
+      flex : flex_t := column; 
       min_height, min_width : Natural := 0; 
       max_height, max_width : Natural := Natural'Last;
       priority : Natural := 0; 
@@ -82,7 +84,7 @@ package Widget is
    function Is_Clickable (This : in out Instance) return Boolean; 
    function Set_Event_Override_Height (This: in out Instance; Parent : Widget.Any_Acc; new_height: Natural) return Natural;
    function Set_Event_Override_Width (This: in out Instance; Parent : Widget.Any_Acc; new_width: Natural) return Natural;
-   
+   procedure Set_Flex_Direction (This: in out Instance; new_flex: flex_t); 
 
 
 end Widget;
