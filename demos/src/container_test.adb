@@ -5,6 +5,9 @@ with Widget.Button; use Widget.Button;
 with Ada.Text_IO; use Ada.Text_IO;
 with Button_Callbacks; use Button_Callbacks;
 
+with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
+
+
 procedure Container_Test is
    Multi_Line_String : constant String := 
    "This is a mutli-line string." & ASCII.LF &
@@ -230,6 +233,7 @@ begin
             -- Update the display if needed
             if Handler.update_render then
                -- Clear screen completely
+               Handler.Clear_Terminal; 
                Put(ASCII.ESC & "[2J");  -- Clear entire screen
                Put(ASCII.ESC & "[H");   -- Move cursor to home position
                

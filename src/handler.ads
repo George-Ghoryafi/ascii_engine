@@ -21,6 +21,19 @@ package Handler is
    start_dist : Float; 
    start_w, start_h : Natural;
    event_target : Widget.Any_Acc;
+   -- Display buffer for rendering
+   type Cell is record
+      Char : Character := ' ';
+      FG : Widget.color_t := Widget.default_color;
+      BG : Widget.color_t := Widget.default_color;
+   end record;
+
+   type Buffer_Array is array (Natural range <>, Natural range <>) of Cell;
+   type Buffer_Access is access Buffer_Array;
+
+   buffer : Buffer_Access := null;
+
+   procedure Initialize_Buffer; 
    
    -- Navigation focus
    focused_widget : Widget.Any_Acc := null;
@@ -29,6 +42,7 @@ package Handler is
    procedure display_nodes;
    procedure Set_Background_Color (Color: Widget.color_t);
    procedure Reset_Color;
+   procedure Clear_Terminal; 
    
    -- Navigation functions
    procedure Initialize_Focus;

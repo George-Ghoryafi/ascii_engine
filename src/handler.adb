@@ -7,6 +7,9 @@ with Ada.Numerics;
 with Ada.Numerics.Elementary_Functions; 
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Tags; use Ada.Tags;
+with Ada.Unchecked_Deallocation;
+
+with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
 
 with Widget; use Widget; 
 with Widget.Button;
@@ -56,6 +59,76 @@ with Widget.Button;
       end if; -- end if cc = 0
    end add_to_LOT;
 
+  
+  
+  procedure Calculate_Dimensions (Node_Cursor : Layout_Object_Tree.Cursor) is 
+   total_height : Natural := 0; 
+   max_width : Natural := 0; 
+   Child_Cursor : Layout_Object_Tree.Cursor; 
+   Child_Widget : Widget.Any_Acc;
+   Node_Widget : Widget.Any_Acc;
+  begin 
+
+   if not LOT.Has_Element (Node_Cursor) then 
+      return; 
+   end if;
+
+   Node_Widget := LOT.Element (Node_Cursor);
+
+   if Node_Widget = null then 
+      return; 
+   end if;
+
+   if LOT.Child_Count(Node_Cursor > 0) then 
+      Child_Cursor := LOT.First_Child (Node_Cursor);
+      while LOT.Has_Element (Child_Cusor) loop 
+         Calculate_Layout (Child_Cursor);
+
+
+         Child_Widget := LOT.Element (Child_Cursor);
+
+         if Child_Widget /= null then 
+            total_height := total_height + Child_Widget.Height;
+
+            if Child_Widget.Width > max_width then 
+               max_width := Child_Widget.Width; 
+            end if;  
+         else 
+            -- Handle the case where the child widget is null
+            -- This could be a placeholder or an empty space in the layout
+            return;
+         end if;  
+
+         Child_Cursor := LOT.Next_Sibling (Child_Cursor);
+      end loop; -- end while LOT.Has_Element (Child_Cursor)
+   else 
+      declare 
+         Leaf_Instance : Widget.Instance := Widget.Instance(Node_Widget.all);
+      begin 
+         if Leaf_Instance /= null then 
+            total_height := Leaf_Instance.Height; 
+            max_width := Leaf_Instance.Width; 
+         end if; 
+      end; -- end declare
+      return; 
+   end if; 
+
+   -- Now update the current node's dimensions
+   declare 
+      Node_Instance_Ref : access Widget.Instance := Widget.Instance(Node_Widget.all);
+   begin 
+      if Node_Instance_Ref /= null then 
+         Node_Instance_Ref.all.Set_Width (max_width); 
+         Node_Instance_Ref.all.Set_Height (total_height); 
+      end if;
+   end; -- end declare
+  end Calculate_Dimensions; -- end procedure Calculate_Dimensions
+  
+  
+  
+  
+  
+  
    procedure display_nodes is
       w : Widget.Any_Acc; 
       current_id : Ada.Strings.Unbounded.Unbounded_String;
@@ -65,6 +138,26 @@ with Widget.Button;
          Widget.render(w.all); 
       end loop; -- end for c in LOT.Iterate
    end display_nodes; -- end procedure display_node
+   
+   
+   procedure Free_Buffer is new Ada.Unchecked_Deallocation(
+      Object => Buffer_Array,
+      Name => Buffer_Access);
+
+
+   procedure Initialize_Buffer is
+   begin
+      if buffer /= null then
+         Free_Buffer(buffer);
+      end if;
+      
+      if main_widget /= null then
+         buffer := new Buffer_Array(0..main_widget.Height-1, 0..main_widget.Width-1);
+      else
+         -- Default size if no main widget exists
+         buffer := new Buffer_Array(0..24, 0..79);
+      end if;
+   end Initialize_Buffer;
 
    procedure Set_Background_Color (Color: Widget.color_t) is
       R_Str : String := Ada.Strings.Fixed.Trim (Color.red'Image, Ada.Strings.Left); 
@@ -78,6 +171,12 @@ with Widget.Button;
    begin
       Ada.Text_IO.Put(ASCII.ESC & "[0m");
    end Reset_Color;
+
+   procedure Clear_Terminal is
+   begin
+      Ada.Text_IO.Put(ASCII.ESC & "[2J" & ASCII.ESC & "[H");
+      Ada.Text_IO.Flush;
+   end Clear_Terminal;
    
    -- Navigation functions implementation
    function Is_Navigable(W : Widget.Any_Acc) return Boolean is
