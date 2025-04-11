@@ -7,11 +7,15 @@ with Ada.Numerics;
 with Ada.Numerics.Elementary_Functions; 
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Tags; use Ada.Tags;
+with Ada.Calendar;
+with Ada.Characters.Latin_1; use Ada.Characters.Latin_1;
 
 with Widget; use Widget; 
 with Widget.Button;
 
  package body Handler is 
+   -- Add this variable to track the last render time
+   Last_Render_Time : Ada.Calendar.Time := Ada.Calendar.Time_Of(1901, 1, 1); -- Initialize to a past time
    procedure add_to_LOT (This : Widget.Any_Acc; Parent : Widget.Any_Acc) is
       parent_cursor : Layout_Object_Tree.Cursor := Layout_Object_Tree.Find (Container => LOT, Item => Parent);
       cc : Natural := Natural (Layout_Object_Tree.Child_Count (parent_cursor));
@@ -125,44 +129,62 @@ with Widget.Button;
    end Initialize_Focus;
    
    function Find_Next_Navigable_Widget(Current : Widget.Any_Acc; Direction : String) return Widget.Any_Acc is
-      -- This is a simplified implementation - in a real application, you would
-      -- want to consider the spatial layout of widgets
+      -- Improved implementation that better handles navigation between widgets
+      All_Navigable : array(1..100) of Widget.Any_Acc := (others => null);
+      Count : Natural := 0;
+      Current_Index : Natural := 0;
       
-      procedure Find_Next(Position : Layout_Object_Tree.Cursor; Found_Current : in out Boolean; Result : in out Widget.Any_Acc) is
+      procedure Collect_Navigable(Position : Layout_Object_Tree.Cursor) is
          Child : Layout_Object_Tree.Cursor := Layout_Object_Tree.First_Child(Position);
       begin
-         while Layout_Object_Tree.Has_Element(Child) and Result = null loop
+         while Layout_Object_Tree.Has_Element(Child) loop
             declare
                Widget_Ptr : Widget.Any_Acc := Layout_Object_Tree.Element(Child);
             begin
-               if not Found_Current and Widget_Ptr = Current then
-                  Found_Current := True;
-               elsif Found_Current and Is_Navigable(Widget_Ptr) then
-                  Result := Widget_Ptr;
-                  return;
+               if Is_Navigable(Widget_Ptr) then
+                  Count := Count + 1;
+                  All_Navigable(Count) := Widget_Ptr;
+                  
+                  if Widget_Ptr = Current then
+                     Current_Index := Count;
+                  end if;
                end if;
             end;
             
             -- Recursively check children
-            Find_Next(Child, Found_Current, Result);
+            Collect_Navigable(Child);
             
             -- Move to next sibling
             Child := Layout_Object_Tree.Next_Sibling(Child);
          end loop;
-      end Find_Next;
+      end Collect_Navigable;
       
-      Found : Boolean := False;
-      Result : Widget.Any_Acc := null;
+      Next_Index : Natural;
    begin
-      Find_Next(LOT_Root, Found, Result);
+      -- First collect all navigable widgets
+      Collect_Navigable(LOT_Root);
       
-      -- If we didn't find a next widget, wrap around to the first
-      if Result = null and Found then
-         Found := False;
-         Find_Next(LOT_Root, Found, Result);
+      -- If no navigable widgets or current widget not found, return null
+      if Count = 0 or Current_Index = 0 then
+         return null;
       end if;
       
-      return Result;
+      -- Determine next index based on direction
+      if Direction = "up" or Direction = "left" then
+         if Current_Index > 1 then
+            Next_Index := Current_Index - 1;
+         else
+            Next_Index := Count; -- Wrap around to last
+         end if;
+      else -- "down" or "right"
+         if Current_Index < Count then
+            Next_Index := Current_Index + 1;
+         else
+            Next_Index := 1; -- Wrap around to first
+         end if;
+      end if;
+      
+      return All_Navigable(Next_Index);
    end Find_Next_Navigable_Widget;
    
    procedure Navigate_Up is
@@ -281,12 +303,23 @@ with Widget.Button;
    begin
       if focused_widget /= null then
          if focused_widget.all'Tag = Widget.Button.Instance'Tag then
+            -- Use Press instead of Set_Pressed
             Widget.Button.Press(Widget.Button.Instance(focused_widget.all));
+            
+            -- Force a render to show the pressed state
+            update_render := True;
+            Update_Display(Show_Instructions => True);
+            
+            -- Small delay to show the pressed state
+            delay 0.2;
+            
+            -- Release the button
             Widget.Button.Release(Widget.Button.Instance(focused_widget.all));
+            
+            -- Force another render to show the released state
+            update_render := True;
          end if;
       end if;
-      
-      update_render := True;
    end Select_Focused_Widget;
    
    procedure Handle_Key_Press(Key : Character) is
@@ -318,6 +351,36 @@ with Widget.Button;
             null;
       end case;
    end Handle_Key_Press;
+
+   procedure Update_Display(Show_Instructions : Boolean := True) is
+      use type Ada.Calendar.Time;
+      Current_Time : Ada.Calendar.Time := Ada.Calendar.Clock;
+      Min_Render_Interval : constant Duration := 0.1; -- 100ms between renders
+   begin
+      -- Only render if update_render is true and enough time has passed since last render
+      if update_render and then (Last_Render_Time = Ada.Calendar.Time_Of(1901, 1, 1) or else 
+                                Current_Time - Last_Render_Time >= Min_Render_Interval) then
+         -- Clear screen completely - using more explicit Windows console commands
+         Ada.Text_IO.Put(ESC & "[2J");        -- Clear entire screen
+         Ada.Text_IO.Put(ESC & "[3J");        -- Clear scrollback buffer
+         Ada.Text_IO.Put(ESC & "[1;1H");      -- Move cursor to top-left corner (1,1)
+         Ada.Text_IO.New_Line;                -- Ensure we start with a clean line
+         
+         -- Redraw UI
+         display_nodes;
+         
+         -- Show navigation instructions if requested
+         if Show_Instructions then
+            Ada.Text_IO.Put_Line("Navigation Instructions:");
+            Ada.Text_IO.Put_Line("- Use arrow keys or WASD to navigate between buttons");
+            Ada.Text_IO.Put_Line("- Press Enter or Space to activate a button");
+            Ada.Text_IO.Put_Line("- Press 'q' to quit");
+         end if;
+         
+         update_render := False;
+         Last_Render_Time := Current_Time;
+      end if;
+   end Update_Display;
 
 begin
    -- Reminder :: Come back and initialize the main_widget here

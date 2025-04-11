@@ -89,15 +89,20 @@ package body Widget.Button is
    procedure Press (This : in out Instance) is
    begin
       This.is_pressed := True;
-      if This.on_click /= null then
-         This.on_click.all;
-      end if;
+      -- Remove the callback execution from here
    end Press;
    
    procedure Release (This : in out Instance) is
    begin
       This.is_pressed := False;
    end Release;
+   
+   procedure Execute_Action (This : in out Instance) is
+   begin
+      if This.on_click /= null then
+         This.on_click.all;
+      end if;
+   end Execute_Action;
    
 begin
    Put_Line("Widget.Button package body loaded");

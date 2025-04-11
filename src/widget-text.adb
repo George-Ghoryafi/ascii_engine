@@ -160,6 +160,14 @@ package body Widget.Text is
          handler.Reset_Color; 
    end render;
 
+   procedure Set_Text (This : in out Instance; New_Text : String) is
+   begin
+      -- Update the text
+      This.text := To_Unbounded_String(New_Text);
+      
+      -- Request a render update
+      Handler.update_render := True;
+   end Set_Text;
 
 begin 
    Put_Line ("Widget.Text package body loaded");

@@ -39,6 +39,10 @@ package Widget.Text is
 
    overriding 
    procedure render (This : in out Instance);
+   
+   -- Add a procedure to update the text of a text widget
+   procedure Set_Text (This : in out Instance; New_Text : String);
+   
    --  overriding
    --  function Set_Event_Override_Width (This: in out Instance; Parent : Widget.Any_Acc; new_width: Natural) return Natural;
    --  overriding

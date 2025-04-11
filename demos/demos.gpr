@@ -1,22 +1,20 @@
-with "config/demos_config.gpr";
+with "../ascii_engine.gpr";
+
 project Demos is
 
-   for Source_Dirs use ("src/", "config/");
-   for Object_Dir use "obj/" & Demos_Config.Build_Profile;
-   for Create_Missing_Dirs use "True";
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
    for Exec_Dir use "bin";
-   for Main use ("container_test.adb");
+   
+   -- Add snake.adb to the list of main programs
+   for Main use ("container_test.adb", "snake.adb");
 
    package Compiler is
-      for Default_Switches ("Ada") use Demos_Config.Ada_Compiler_Switches;
+      for Switches ("ada") use ("-gnatwa", "-gnata", "-g");
    end Compiler;
 
    package Binder is
-      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+      for Switches ("ada") use ("-E");
    end Binder;
-
-   package Install is
-      for Artifacts (".") use ("share");
-   end Install;
 
 end Demos;

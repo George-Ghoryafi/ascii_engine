@@ -45,4 +45,5 @@ package Handler is
    function Find_Next_Navigable_Widget(Current : Widget.Any_Acc; Direction : String) return Widget.Any_Acc;
    function Is_Navigable(W : Widget.Any_Acc) return Boolean;
 
+   procedure Update_Display(Show_Instructions : Boolean := True);
 end Handler;

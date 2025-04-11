@@ -229,19 +229,7 @@ begin
             
             -- Update the display if needed
             if Handler.update_render then
-               -- Clear screen completely
-               Put(ASCII.ESC & "[2J");  -- Clear entire screen
-               Put(ASCII.ESC & "[H");   -- Move cursor to home position
-               
-               -- Redraw UI
-               Handler.display_nodes;
-               
-               Put_Line("Navigation Instructions:");
-               Put_Line("- Use arrow keys or WASD to navigate between buttons");
-               Put_Line("- Press Enter or Space to activate a button");
-               Put_Line("- Press 'q' to quit");
-               
-               Handler.update_render := False;
+               Handler.Update_Display;
             end if;
             
             -- Small delay to prevent CPU hogging

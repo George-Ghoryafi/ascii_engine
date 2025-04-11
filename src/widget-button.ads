@@ -36,6 +36,8 @@ package Widget.Button is
    procedure Press (This : in out Instance);
    procedure Release (This : in out Instance);
    
+   -- Add this new procedure
+   procedure Execute_Action (This : in out Instance);
 private
    subtype Dispatch is Instance'Class;
 end Widget.Button;
